@@ -662,42 +662,31 @@ as.String(relig)
 nrc_tweet$is_trump <- ifelse(nrc_tweet$handle=="trump",1,0)
 
 model1 <- glm(is_trump ~i+we+assent+you+shehe+they+posemo+negemo+negate+anger+sad+anx+social+family+female+male+sexual+achieve+work+home+money+relig+informal+swear+health+death+Quote+Exclam+QMark+Tone+Authentic, family=binomial(link='logit'),data=nrc_tweet)
-<<<<<<< HEAD
 summary(model1)
 
 model2 <- glm(is_trump~i+we, family=binomial(link='logit'),data=nrc_tweet)
 tidy_model2 <- tidy(model2)
-write.csv(tidy_model2, "tidy_model2.csv")
+#write.csv(tidy_model2, "thesis_data/tidy_model2.csv")
 summary(model2)
 
 model3 <- glm(is_trump~posemo+negemo+negate+anger+sad+anx+swear, family=binomial(link='logit'),data=nrc_tweet)
 tidy_model3 <- tidy(model3)
-write.csv(tidy_model3, "tidy_model3.csv")
+#write.csv(tidy_model3, "thesis_data/tidy_model3.csv")
 summary(model3)
 
 model4 <- glm(is_trump~relig+death+achieve, family=binomial(link='logit'),data=nrc_tweet)
 tidy_model4 <- tidy(model4)
-write.csv(tidy_model4, "tidy_model4.csv")
+#write.csv(tidy_model4, "thesis_data/tidy_model4.csv")
 summary(model4)
 ```
 
 
-=======
-
-summary(model1)
-```
-
->>>>>>> a56e9ea43589646852bb18da6803dd88b1e801ef
 If we get a p-value less than the significance level of 0.05, we reject the null hypothesis and conclude that *this feature and the outcome variable are in fact dependent*. 
 
 If $e^\beta-1>0$, odds of being **Trump** increases by the difference in percentage; otherwise, odds decrease by the difference in percentage.  
 
 ```{r}
-<<<<<<< HEAD
-paste(names(model2$coefficients),": ",round((exp(model2$coefficients)-1)*100,2),"%",sep="")
-=======
 paste(names(model1$coefficients),": ",round((exp(model1$coefficients)-1)*100,2),"%",sep="")
->>>>>>> a56e9ea43589646852bb18da6803dd88b1e801ef
 ```
 
 1. By saying 'I', your odds of being Trump increase by 12.26%

@@ -766,7 +766,6 @@ as.String(relig)
 nrc_tweet$is_trump <- ifelse(nrc_tweet$handle=="trump",1,0)
 
 model1 <- glm(is_trump ~i+we+assent+you+shehe+they+posemo+negemo+negate+anger+sad+anx+social+family+female+male+sexual+achieve+work+home+money+relig+informal+swear+health+death+Quote+Exclam+QMark+Tone+Authentic, family=binomial(link='logit'),data=nrc_tweet)
-
 summary(model1)
 ```
 
@@ -827,6 +826,108 @@ summary(model1)
     ## AIC: 6732.8
     ## 
     ## Number of Fisher Scoring iterations: 6
+
+``` r
+model2 <- glm(is_trump~i+we, family=binomial(link='logit'),data=nrc_tweet)
+tidy_model2 <- tidy(model2)
+#write.csv(tidy_model2, "thesis_data/tidy_model2.csv")
+summary(model2)
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = is_trump ~ i + we, family = binomial(link = "logit"), 
+    ##     data = nrc_tweet)
+    ## 
+    ## Deviance Residuals: 
+    ##     Min       1Q   Median       3Q      Max  
+    ## -2.8490  -1.3010   0.6969   1.0586   2.1400  
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept)  0.286032   0.029459   9.709   <2e-16 ***
+    ## i            0.175046   0.009875  17.727   <2e-16 ***
+    ## we          -0.098760   0.007626 -12.951   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## (Dispersion parameter for binomial family taken to be 1)
+    ## 
+    ##     Null deviance: 10700  on 7900  degrees of freedom
+    ## Residual deviance: 10027  on 7898  degrees of freedom
+    ## AIC: 10033
+    ## 
+    ## Number of Fisher Scoring iterations: 4
+
+``` r
+model3 <- glm(is_trump~posemo+negemo+negate+anger+sad+anx+swear, family=binomial(link='logit'),data=nrc_tweet)
+tidy_model3 <- tidy(model3)
+#write.csv(tidy_model3, "thesis_data/tidy_model3.csv")
+summary(model3)
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = is_trump ~ posemo + negemo + negate + anger + sad + 
+    ##     anx + swear, family = binomial(link = "logit"), data = nrc_tweet)
+    ## 
+    ## Deviance Residuals: 
+    ##    Min      1Q  Median      3Q     Max  
+    ## -3.231  -1.171   0.769   1.054   1.486  
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept) -0.151907   0.037130  -4.091 4.29e-05 ***
+    ## posemo       0.085298   0.004904  17.393  < 2e-16 ***
+    ## negemo       0.074713   0.011912   6.272 3.56e-10 ***
+    ## negate       0.024832   0.008828   2.813  0.00491 ** 
+    ## anger       -0.110407   0.017411  -6.341 2.28e-10 ***
+    ## sad          0.059331   0.022517   2.635  0.00842 ** 
+    ## anx         -0.019947   0.023757  -0.840  0.40111    
+    ## swear        0.666099   0.123105   5.411 6.27e-08 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## (Dispersion parameter for binomial family taken to be 1)
+    ## 
+    ##     Null deviance: 10700  on 7900  degrees of freedom
+    ## Residual deviance: 10198  on 7893  degrees of freedom
+    ## AIC: 10214
+    ## 
+    ## Number of Fisher Scoring iterations: 5
+
+``` r
+model4 <- glm(is_trump~relig+death+achieve, family=binomial(link='logit'),data=nrc_tweet)
+tidy_model4 <- tidy(model4)
+#write.csv(tidy_model4, "thesis_data/tidy_model4.csv")
+summary(model4)
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = is_trump ~ relig + death + achieve, family = binomial(link = "logit"), 
+    ##     data = nrc_tweet)
+    ## 
+    ## Deviance Residuals: 
+    ##    Min      1Q  Median      3Q     Max  
+    ## -1.665  -1.329   1.030   1.033   1.033  
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept) 0.3500837  0.0269027  13.013   <2e-16 ***
+    ## relig       0.0094998  0.0181215   0.524   0.6001    
+    ## death       0.0513213  0.0279306   1.837   0.0661 .  
+    ## achieve     0.0008906  0.0066606   0.134   0.8936    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## (Dispersion parameter for binomial family taken to be 1)
+    ## 
+    ##     Null deviance: 10700  on 7900  degrees of freedom
+    ## Residual deviance: 10696  on 7897  degrees of freedom
+    ## AIC: 10704
+    ## 
+    ## Number of Fisher Scoring iterations: 4
 
 If we get a p-value less than the significance level of 0.05, we reject the null hypothesis and conclude that *this feature and the outcome variable are in fact dependent*.
 
