@@ -1,0 +1,8 @@
+Call:,,,,,
+"glm(formula = is_trump ~ i + we, family = binomial(link = ""logit""), data = nrc_tweet)",,,,,
+Coefficients:,,,,,
+term,estimate,std.error,statistic,p.value,significance
+(Intercept),0.286031545,0.029459272,9.709389588,2.75E-22,***
+i,0.175045656,0.00987471,17.72666245,2.61E-70,***
+we,-0.098759937,0.007625699,-12.95093552,2.32E-38,***
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1,,,,,
