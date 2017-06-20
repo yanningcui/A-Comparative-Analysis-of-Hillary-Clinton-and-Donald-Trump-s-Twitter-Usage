@@ -1,9 +1,0 @@
-Call:,,,,,
-"glm(formula = is_trump ~ relig + death + achieve, family = binomial(link = ""logit""), data = nrc_tweet)",,,,,
-Coefficients:,,,,,
-term,estimate,std.error,statistic,p.value,significance
-(Intercept),0.350083653,0.026902718,13.01294723,1.03E-38,***
-relig,0.009499756,0.018121535,0.524224697,0.600122266,
-death,0.051321296,0.027930556,1.837460554,0.066141935,.
-achieve,0.000890565,0.00666065,0.133705363,0.893635564,
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1,,,,,
