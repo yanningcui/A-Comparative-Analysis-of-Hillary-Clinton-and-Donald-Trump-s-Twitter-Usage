@@ -139,6 +139,8 @@ raw_tweet <- raw_tweet %>%
 raw_tweet <- raw_tweet %>%
   mutate(date = Date) %>%
   select(-Date)
+
+raw_tweet
 ```
 
 ### Extract month and year variable
@@ -151,9 +153,7 @@ tweet <- raw_tweet %>%
   mutate(month = factor(month, month.abb, ordered=TRUE)) %>%
   filter(date >= as.Date("2015-03-01")) #formally launch
 
-tweet %>%
-  filter(handle == 'clinton')
-
+tweet
 #write_csv(tweet, "thesis_data/tidy_tweet.csv")
 ```
 
@@ -171,8 +171,8 @@ ggplot(frequency_handle, aes(as.Date(date), n), group = handle) +
    xlab("Date") + 
    ylab("Tweet Count") +
    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-   labs(title = "Figure 1: Change of frequencies in tweets") +
-   ggsave(file="frequency_handle.png")
+   labs(title = "Figure 1: Change of frequencies in tweets")
+   #ggsave(file="frequency_handle.png")
 ```
 
 ### Preprocessing: tokenization, normalization, removing stop words
@@ -234,14 +234,15 @@ head(bigram("clinton"),10)
 
 ### 1.2 Quantify what a document is about: Finding the most representative terms for each candidate
 
-Although removing stop words reduces the dimensionality of term space, it is not a very sophisticated approach to adjusting term frequency for commonly used words. After removing stop words, I start to analyze the most frequent terms in the two candidates??? language. However, usually we care more about how rare a term is, not just the frequency. Many terms used by a candidate will also be used by his/her rival, not giving much insight into the tweet's author. For example, the term "win" or ???Trump??? is used frequently in the dataset by both candidates, but it is not helpful to distinguish them; however, there are terms that are used much less frequently, but almost exclusively by certain candidate. Those are the words (or groups of words) that I look for in order to analyze the differences more accurately. 
+Although removing stop words reduces the dimensionality of term space, it is not a very sophisticated approach to adjusting term frequency for commonly used words. After removing stop words, I start to analyze the most frequent terms in the two candidates' language. However, usually we care more about how rare a term is, not just the frequency. Many terms used by a candidate will also be used by his/her rival, not giving much insight into the tweet's author. For example, the term "win" or "Trump" is used frequently in the dataset by both candidates, but it is not helpful to distinguish them; however, there are terms that are used much less frequently, but almost exclusively by certain candidate. Those are the words (or groups of words) that I look for in order to analyze the differences more accurately. 
 
-One way to measure how important a word may be is its term frequency (tf): how frequently a word occurs in a document. Another approach is to look at a term???s inverse document frequency (idf), which decreases the weight for commonly used words and increases the weight for words that are not used very often in a collection of documents. We can combine these two to calculate a term???s tf-idf (the two quantities multiplied together): the frequency of a term adjusted for how rarely it is used (Silge & Robinson, 2016).
+One way to measure how important a word may be is its term frequency (tf): how frequently a word occurs in a document. Another approach is to look at a term's inverse document frequency (idf), which decreases the weight for commonly used words and increases the weight for words that are not used very often in a collection of documents. We can combine these two to calculate a term's tf-idf (the two quantities multiplied together): the frequency of a term adjusted for how rarely it is used (Silge & Robinson, 2016).
 
 The idea of tf-idf is to find the most important words for the content in the group of tweets by Trump and Clinton. By calculating tf-idf, we attempt to find the words that are important (i.e., common) in a tweet, but not too common. It is meaningless to quantify the importance of different words in a single tweet, because every tweet is only 140 words in length. Therefore, I treat tweets from Trump (or Clinton) as a corpus. Then the statistic tf-idf is intended to measure how important a word is to a candidate in his or her corpus. The value of tf-idf increases proportionally to the frequency that a word appears in the document, but is counteracting by the frequency of that word in the corpus. Term Frequency - Inverse document frequency [tf-idf] is calculated for each word using the formula (Vijayarani, Ilamathi, & Nithya, 2015):
+
 **tf-idf (t, f, d) = tf (t, d) * idf (t, d)**
 
-I use this formula to calculate the most important terms (bigrams) in each candidate???s tweets.
+I use this formula to calculate the most important terms (bigrams) in each candidate's tweets.
  
 ```{r}
 #tokenize
@@ -295,17 +296,18 @@ tfidf <- tfidf_bigram %>%
         theme(strip.text=element_text(hjust=0)) +
         theme(strip.text = element_text(face = "italic", size=10)) +
         theme(axis.title.x=element_blank()) +
-        theme(axis.ticks.x=element_blank()) +
-        ggsave(file="tfidf_bigram.png")
+        theme(axis.ticks.x=element_blank())
+        #ggsave(file="tfidf_bigram.png")
 
 tfidf
 ```
+
 
 ## Part 2: Sentiment Analysis
 
 ### 2.1 Sentiment-topic words (top words in each sentiment)
 
-Clinton
+##### Clinton
 
 ```{r}
 newstop2 <- read_csv("thesis_data/customized_stopwords2.csv")
@@ -334,11 +336,11 @@ nrc_word_counts %>%
     theme(strip.text = element_text(face = "italic", size=10)) +
     theme(axis.title.x=element_blank()) +
     theme(axis.ticks.x=element_blank()) +
-    theme(axis.text.x=element_blank()) +
-    ggsave(file="top_10_words_sentiment_clinton.png")
+    theme(axis.text.x=element_blank())
+    #ggsave(file="top_10_words_sentiment_clinton.png")
 ```
 
-Trump
+##### Trump
 
 ```{r}
 #trump
@@ -359,8 +361,8 @@ nrc_word_counts %>%
     theme(strip.text = element_text(face = "italic", size=10)) +
     theme(axis.title.x=element_blank()) +
     theme(axis.ticks.x=element_blank()) +
-    theme(axis.text.x=element_blank()) +
-    ggsave(file="top_10_words_sentiment_trump.png")
+    theme(axis.text.x=element_blank()) 
+    #ggsave(file="top_10_words_sentiment_trump.png")
 ```
 
 Since the sentiment dictionary cannot detect **negators, amplifiers, de-amplifiers, and adversative conjunctions** (phrases like 'not my president' might not be correctly detected).
@@ -401,8 +403,8 @@ negated_words %>%
     theme(strip.text = element_text(face = "italic", size=10)) +
     theme(axis.title.x=element_blank()) +
     theme(axis.ticks.x=element_blank()) +
-    theme(axis.text.x=element_blank()) +
-    ggsave(file="top_negation_words.png")
+    theme(axis.text.x=element_blank()) 
+    #ggsave(file="top_negation_words.png")
 
 ```
 
@@ -436,8 +438,8 @@ name_words %>%
     theme(strip.text = element_text(face = "italic", size=10)) +
     theme(axis.title.x=element_blank()) +
     theme(axis.ticks.x=element_blank()) +
-    theme(axis.text.x=element_blank()) +
-    ggsave(file="top_words_names.png")
+    theme(axis.text.x=element_blank()) 
+    #ggsave(file="top_words_names.png")
 ```
 
 #### How does each candidate talk about immigration?
@@ -470,13 +472,15 @@ immigration_words %>%
     theme(strip.text = element_text(face = "italic", size=10)) +
     theme(axis.title.x=element_blank()) +
     theme(axis.ticks.x=element_blank()) +
-    theme(axis.text.x=element_blank()) +
-    ggsave(file="top_words_immigration.png")
+    theme(axis.text.x=element_blank()) 
+    #ggsave(file="top_words_immigration.png")
 ```
 
-### 2.3 Change of sentiments over time
+### 2.3 Change of sentiments by month in 2016
 
-Get sentiments and emotions and calculate the mean of sentiments
+Get sentiments and emotions and calculate the mean of each sentiment/emotion
+
+**Change of sentiments (positive/negative)**
 
 ```{r}
 tweet$sentiment <- get_sentiment(tweet$text) %>% 
@@ -485,17 +489,21 @@ tweet$sentiment <- get_sentiment(tweet$text) %>%
 #look at the mean sentiment scores for each candidate
 clinton_average <- tweet %>%
   filter(handle == "clinton") %>%
-  group_by(date)%>% 
+  #filter(year == 2016) %>%
+  group_by(year)%>% 
   summarise(Mean=mean(sentiment), Max=max(sentiment), Min=min(sentiment), Median=median(sentiment), Std=sd(sentiment), Variance = var(sentiment)) %>%
   mutate(handle = "clinton")
 
 trump_average <- tweet %>%
   filter(handle == "trump") %>%
-  group_by(date)%>% 
+  #filter(year == 2016) %>%
+  group_by(year)%>% 
   summarise(Mean=mean(sentiment), Max=max(sentiment), Min=min(sentiment), Median=median(sentiment), Std=sd(sentiment), Variance = var(sentiment)) %>%
   mutate(handle = "trump")
 
 average <- rbind(clinton_average, trump_average)
+average
+#write.csv(average, "thesis_data/average_sentiment_year.csv")
 ```
 
 #### Let's verify the result!
@@ -516,56 +524,26 @@ negative <- tweet %>%
 as.String(negative)
 ```
 
-#### How do sentiments change over time?
-
-```{r}
-#how sentiment changes over time (mean)
-average %>%
-   ggplot(aes(as.Date(date), Mean), group = handle) + 
-   geom_line(size = 0.5, alpha = 0.7, aes(color = handle)) +
-   scale_colour_manual(values = c("springgreen4", "firebrick3")) +
-   scale_x_date(labels = date_format("%Y-%m-%d"), date_breaks = "2 months") +    
-   xlab("Date") + 
-   ylab("Average Tweet Sentiment") +
-   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-   labs(title = "Figure 8: Change of sentiment over time") +
-   ggsave(file="sentiment_change_mean.png") 
-```
+**Change of emotions (8 categories)**
 
 ```{r}
 nrc_tweet <- cbind(tweet, get_nrc_sentiment(tweet$text)) 
 
 nrc_clinton <- nrc_tweet %>% 
   filter(handle == "clinton") %>%
-  group_by(date) %>%
-  summarise(negative_mean = mean(negative)*-1,
-            positive_mean = mean(positive)) %>% melt %>%
+  group_by(year) %>%
+  summarise(mean_angry=mean(anger), mean_anticipation=mean(anticipation), mean_disgust=mean(disgust), mean_fear=mean(fear), mean_joy=mean(joy), mean_sad=mean(sadness), mean_surprise=mean(surprise), mean_trust=mean(trust), mean_positive=mean(positive), mean_negative=mean(negative)) %>%
   mutate(handle = "clinton")
 
 nrc_trump <- nrc_tweet %>% 
   filter(handle == "trump") %>%
-  group_by(date) %>%
-  summarise(negative_mean = mean(negative)*-1,
-            positive_mean = mean(positive)) %>% melt %>%
+  group_by(year) %>%
+  summarise(mean_angry=mean(anger), mean_anticipation=mean(anticipation), mean_disgust=mean(disgust), mean_fear=mean(fear), mean_joy=mean(joy), mean_sad=mean(sadness), mean_surprise=mean(surprise), mean_trust=mean(trust), mean_positive=mean(positive), mean_negative=mean(negative)) %>%
   mutate(handle = "trump")
 
-nrc <- rbind(nrc_clinton, nrc_trump)
-
-names(nrc) <- c("timestamp", "sentiment", "meanvalue", "handle")
-
-nrc$sentiment = factor(nrc$sentiment,levels(nrc$sentiment)[c(2,1)])
-
-ggplot(data = nrc, aes(x = as.Date(timestamp), y = meanvalue, group = sentiment)) +
-      geom_line(size = 0.5, alpha = 0.7, aes(color = sentiment)) +
-      facet_wrap(~handle) +
-      ylim(-5, NA) + 
-      scale_colour_manual(values = c("springgreen4", "firebrick3")) +
-      theme(legend.title=element_blank(), axis.title.x = element_blank()) +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-      scale_x_date(labels = date_format("%Y-%m-%d"), date_breaks = "3 months") +
-      ylab("Average sentiment score") + 
-      ggtitle("Figure 9: Change of sentiment over time") +
-      ggsave(file="sentiment_separate_overtime.png")
+nrc_average <- rbind(nrc_clinton, nrc_trump)
+nrc_average
+#write.csv(nrc_average, "thesis_data/average_nrc_sentiment_year.csv")
 ```
 
 ### Positive and negative contribution of each word
@@ -594,8 +572,8 @@ tweet_tidy %>%
   theme(strip.text = element_text(face = "italic", size=10)) +
   theme(axis.title.x=element_blank()) +
   theme(axis.ticks.x=element_blank()) +
-  theme(axis.text.x=element_blank()) +
-  ggsave(file="contribution_sentiment_clinton.png")
+  theme(axis.text.x=element_blank()) 
+  #ggsave(file="contribution_sentiment_clinton.png")
 ```
 
 #### Trump
@@ -620,8 +598,8 @@ tweet_tidy %>%
   theme(strip.text = element_text(face = "italic", size=10)) +
   theme(axis.title.x=element_blank()) +
   theme(axis.ticks.x=element_blank()) +
-  theme(axis.text.x=element_blank()) +
-  ggsave(file="contribution_sentiment_trump.png")
+  theme(axis.text.x=element_blank()) 
+  #ggsave(file="contribution_sentiment_trump.png")
 ```
 
 ## Part 3: What features contribute to the language differences?
@@ -632,7 +610,7 @@ Load the annotated data:
 nrc_tweet <- read_csv("thesis_data/LIWC2015 Results (tidy_tweet).csv")
 ```
 
-Let's look at the most angry, most anxious, and the tweet most related to religion
+Let's look at the most angry, most anxious, and most religious tweet
 
 ```{r}
 #the most angry sentiment
@@ -661,19 +639,23 @@ as.String(relig)
 #logistic regresssion on tweets: is_trump~features
 nrc_tweet$is_trump <- ifelse(nrc_tweet$handle=="trump",1,0)
 
+#all features
 model1 <- glm(is_trump ~i+we+assent+you+shehe+they+posemo+negemo+negate+anger+sad+anx+social+family+female+male+sexual+achieve+work+home+money+relig+informal+swear+health+death+Quote+Exclam+QMark+Tone+Authentic, family=binomial(link='logit'),data=nrc_tweet)
 summary(model1)
 
+#self-direction
 model2 <- glm(is_trump~i+we, family=binomial(link='logit'),data=nrc_tweet)
 tidy_model2 <- tidy(model2)
 #write.csv(tidy_model2, "thesis_data/tidy_model2.csv")
 summary(model2)
 
+#sentiment
 model3 <- glm(is_trump~posemo+negemo+negate+anger+sad+anx+swear, family=binomial(link='logit'),data=nrc_tweet)
 tidy_model3 <- tidy(model3)
 #write.csv(tidy_model3, "thesis_data/tidy_model3.csv")
 summary(model3)
 
+#personal concerns
 model4 <- glm(is_trump~relig+death+achieve, family=binomial(link='logit'),data=nrc_tweet)
 tidy_model4 <- tidy(model4)
 #write.csv(tidy_model4, "thesis_data/tidy_model4.csv")
@@ -686,8 +668,10 @@ If we get a p-value less than the significance level of 0.05, we reject the null
 If $e^\beta-1>0$, odds of being **Trump** increases by the difference in percentage; otherwise, odds decrease by the difference in percentage.  
 
 ```{r}
-paste(names(model1$coefficients),": ",round((exp(model1$coefficients)-1)*100,2),"%",sep="")
+paste(names(model3$coefficients),": ",round((exp(model3$coefficients)-1)*100,2),"%",sep="")
 ```
+
+For example, in the first model: 
 
 1. By saying 'I', your odds of being Trump increase by 12.26%
 2. By saying 'we', your odds of being Trump decrease by 12.74%
