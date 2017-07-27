@@ -112,6 +112,7 @@ library(sparklyr)
 library(caTools)
 library(data.table)
 library(NLP)
+library(zoo)
 ```
 
 ### Load Data
@@ -157,15 +158,18 @@ tweet
 #write_csv(tweet, "thesis_data/tidy_tweet.csv")
 ```
 
+
 ### Distribution of tweets by candidate
 
 ```{r frequency}
+tweet$date <- as.Date(tweet$date)
 #frequency changes detected
 frequency_handle <- tweet %>%
-  count(date, handle)
+  mutate(Date = as.yearmon(date))
+  #count(month_year, handle)
 
 ggplot(frequency_handle, aes(as.Date(date), n), group = handle) + 
-   geom_line(size = 0.5, alpha = 0.7, aes(color = handle)) +
+   geom_line(size = 1, alpha = 0.7, aes(color = handle)) +
    scale_colour_manual(values = c("springgreen4", "firebrick3")) +
    scale_x_date(labels = date_format("%Y-%m-%d"), date_breaks = "3 months") +   
    xlab("Date") + 
@@ -411,7 +415,7 @@ negated_words %>%
 #### How do candidates talk about themselves and their opponent?
 
 ```{r}
-name <- c("trump", "clinton", "hillary", "donald", "Trump", "Clinton", "Hillary", "Donald")
+name <- c("clinton", "hillary", "Clinton", "Hillary")
 
 name_words <- bigrams_separated %>%
   filter(word2 %in% name) %>%
@@ -656,10 +660,11 @@ tidy_model3 <- tidy(model3)
 summary(model3)
 
 #personal concerns
-model4 <- glm(is_trump~relig+death+achieve, family=binomial(link='logit'),data=nrc_tweet)
+model4 <- glm(is_trump~relig+death+achieve+female, family=binomial(link='logit'),data=nrc_tweet)
 tidy_model4 <- tidy(model4)
-#write.csv(tidy_model4, "thesis_data/tidy_model4.csv")
+write.csv(tidy_model4, "thesis_data/tidy_model4.csv")
 summary(model4)
+
 ```
 
 
