@@ -2,9 +2,9 @@
 
 ## Introduction
 
-A large body of research argue that political leanings correlate with various factors. On average, **left-and-right leaning individuals express differently  through their use of language in different political orientations (speeches, debates, and social media content)**. 
+Words are often believed to be indicators of values that are important to politicians. A large body of research argue that political leanings correlate with various factors. On average, **left-and-right leaning individuals express differently  through their use of language in different political orientations (speeches, debates, and social media content)**. 
 
-During a presidential election, such language differences in orientations may reasonably influence voters' perceptions of a given candidate. In recent years, many scholars have begun through computerized methods to analyze political candidates' discourse to determine whether the candidates' linguistic forms may be differentially linked to particular aspects of their personalities, political parties, or their stances on important topics such as healthcare, education, immigration, abortion, or economy.
+During a presidential election, such language differences in orientations may influence voters' perceptions of a given candidate. In recent years, many scholars have begun through computerized methods to analyze political candidates' discourse to determine whether the candidates' linguistic forms may be differentially linked to particular aspects of their personalities, political parties, or their stances on important topics such as healthcare, education, immigration, abortion, or economy. A recent study analyzed Trump and Clinton's Twitter accounts in the six months before the election and found that *Trump benefited by using moral-emotional languages but Clinton did not: moral emotions like "hate" were more likely to unite supporters, but a non-moral emotion concept like "justice" failed to do so.* (Twitter's Passion Politics: https://nyti.ms/2uWiSDY) The research team speculated that the differences could be a result of political parties. 
 
 The purpose of this study is to contribute to the growing body of quantitative research on the discourse and personalities of politicians. **In order to discover how Republican and Democrat candidates use Twitter during the campaign, I conduct a content analysis of Hillary Clinton and Donald Trump's tweets from 2016 election season. I compare the two candidates' tweets from the 2016 presidential election to find any systematic differences between the two and model the outcomes using a logistics regression model.**
 
@@ -26,7 +26,7 @@ Based on the literature, I hypothesize that:
 
 *H1: Democrat candidate Hillary Clinton emphasizes the perception of uniqueness, and Republican candidate Donald Trump emphasizes group memberships.*
 
-*H2: Democrat candidate Hilary Clinton's language contains more positive sentiments and emotions and more swear words, while Republican candidate Donald Trump uses more negation words and more negative sentiments and emotions, including anger and sadness.*
+*H2: Democrat candidate's language contains more positive sentiments and emotions and more swear words, while Republican candidate uses more negation words and more negative sentiments and emotions.*
 
 *H3: Republican candidate Donald Trump are more likely to emphasizes death, achievement, and religion than his Democratic counterpart.*
 
@@ -41,7 +41,7 @@ The original dataset contains 11,770 tweets from 2014-01-01 to 2016-10-14 from t
 
 Tweets were obtained through javascript scraping of the browser twitter timeline rather than a Tweepy python API or the twitter timeline API. Because the dataset contains no retweets, it will provide us with more accurate insights about the language use difference between the two candidates, rather than the original author of the tweets. 
 
-Although there have been data scientists arguing that Trump???s campaign team and himself are using the same account to spread tweets, there are no formal evidence proving that the tweets are from different people. Therefore, I will treat all tweets from the two official accounts as political orientation of the two candidates and include them in the analysis as they represent the activity, opinions, and ideas of the two.
+Although there have been data scientists arguing that Trump's campaign team and himself are using the same account to spread tweets, there are no formal evidence proving that the tweets are from different people. (http://varianceexplained.org/r/trump-tweets/) Therefore, I will treat all tweets from the two official accounts as political orientation of the two candidates and include them in the analysis as they represent the activity, opinions, and ideas of the two.
 
 Each tweet contains its id, time, text, link, and author (Hillary Clinton/realDonaldTrump). The dataset can be downloaded from the Kaggle website. (https://www.kaggle.com/speckledpingu/RawTwitterFeeds)
 
@@ -75,3 +75,15 @@ normalization/stemming, stop words removal, and TF/IDF
 Based on the hypotheses, I focus on 12 dimensions in 3 major categories in order to profile political sentiment: **1st person singular pronouns, 1st person plural pronouns, positive emotions, negative emotions, negation words, sadness, anxiety, anger, swear words, death, achievement, and religion**. 
 
 #### Logistic regression: significance of different features, compute odds ratio
+
+### Some interesting insights
+
+In order to discover how Republican and Democratic candidates use Twitter during the 2016 campaign, I conduct a content analysis of Hillary Clinton and Donald Trump?s tweets from the 2016 election season. I compare the two candidates? tweets to find any systematic differences between the two and model the outcomes using a logistic regression model. In this study, I also conduct extensive experiments on the dataset and explored different approaches for text mining and incorporated them into the analysis. 
+While specific hypotheses follow a thorough review of the relevant literature, the study finds that Donald Trump is more likely to attack his opponents by sticking negative labels on them. He also emphasizes individualism and narcissism, and uses uncivil words more frequently; Hillary Clinton?s attention is more spread out, including different political issues and policies. She tends to emphasize group membership and pays more attention to female-related topics. 
+
+![Image of tf-idf bigram](https://github.com/yanningcui/thesis/blob/master/thesis_draft_files/figure-markdown_github/unnamed-chunk-4-1.png)
+
+YOU CAN FIND MORE RESULTS HERE: (https://github.com/yanningcui/thesis/blob/master/thesis_draft.md)
+This finding suggests that both Donald Trump and Hillary Clinton utilized rhetorical techniques to resonate with their supporters during the campaign, and adopted communication strategies to present a likable self-image. While Hillary Clinton put more emphasis on feminine issues and talked about different political topics, Donald Trump repeatedly launched attacks on his opponents on Twitter, emphasized his personal charm, and used his ?bluntness? as a rhetorical technique. Voters might receive his outrageous speech as pragmatic and refreshing.
+This finding continues to build on the literature of computational linguistic differences between political parties on social media. It also provides another exploratory look at the newest form of campaigning: Twitter, and interesting insight into a relevant contemporary social problem.
+I also want to propose several directions to develop my work beyond this thesis. Regarding the sample size, I will address more candidates from the two parties throughout the campaign season, to have a more representative sample. If there still exists such differences in the language usage, we might conclude that the differences are caused by different parties and ideologies. I will also introduce more data sources, including debates, speeches, conferences, and media coverage, to conduct a more thorough content analysis of the language uses. As for the methodologies, I propose to experiment with machine learning approaches for sentiment analysis of tweets, rather than a simple word count. I will train sentiment classifiers for Twitter datasets with both supervised and unsupervised models, and predict positive/negative sentiment classification. 

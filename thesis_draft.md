@@ -6,9 +6,9 @@ Jun 1, 2017
 Introduction
 ------------
 
-A large body of research argue that political leanings correlate with various factors. On average, **left-and-right leaning individuals express differently through their use of language in different political orientations (speeches, debates, and social media content)**.
+Words are often believed to be indicators of values that are important to politicians. A large body of research argue that political leanings correlate with various factors. On average, **left-and-right leaning individuals express differently through their use of language in different political orientations (speeches, debates, and social media content)**.
 
-During a presidential election, such language differences in orientations may reasonably influence voters' perceptions of a given candidate. In recent years, many scholars have begun through computerized methods to analyze political candidates' discourse to determine whether the candidates' linguistic forms may be differentially linked to particular aspects of their personalities, political parties, or their stances on important topics such as healthcare, education, immigration, abortion, or economy.
+During a presidential election, such language differences in orientations may influence voters' perceptions of a given candidate. In recent years, many scholars have begun through computerized methods to analyze political candidates' discourse to determine whether the candidates' linguistic forms may be differentially linked to particular aspects of their personalities, political parties, or their stances on important topics such as healthcare, education, immigration, abortion, or economy. A recent study analyzed Trump and Clinton's Twitter accounts in the six months before the election and found that *Trump benefited by using moral-emotional languages but Clinton did not: moral emotions like "hate" were more likely to unite supporters, but a non-moral emotion concept like "justice" failed to do so.* (Twitter's Passion Politics: <https://nyti.ms/2uWiSDY>) The research team speculated that the differences could be a result of political parties.
 
 The purpose of this study is to contribute to the growing body of quantitative research on the discourse and personalities of politicians. **In order to discover how Republican and Democrat candidates use Twitter during the campaign, I conduct a content analysis of Hillary Clinton and Donald Trump's tweets from 2016 election season. I compare the two candidates' tweets from the 2016 presidential election to find any systematic differences between the two and model the outcomes using a logistics regression model.**
 
@@ -31,7 +31,7 @@ Based on the literature, I hypothesize that:
 
 *H1: Democrat candidate Hillary Clinton emphasizes the perception of uniqueness, and Republican candidate Donald Trump emphasizes group memberships.*
 
-*H2: Democrat candidate Hilary Clinton's language contains more positive sentiments and emotions and more swear words, while Republican candidate Donald Trump uses more negation words and more negative sentiments and emotions, including anger and sadness.*
+*H2: Democrat candidate's language contains more positive sentiments and emotions and more swear words, while Republican candidate uses more negation words and more negative sentiments and emotions.*
 
 *H3: Republican candidate Donald Trump are more likely to emphasizes death, achievement, and religion than his Democratic counterpart.*
 
@@ -46,7 +46,7 @@ The original dataset contains 11,770 tweets from 2014-01-01 to 2016-10-14 from t
 
 Tweets were obtained through javascript scraping of the browser twitter timeline rather than a Tweepy python API or the twitter timeline API. Because the dataset contains no retweets, it will provide us with more accurate insights about the language use difference between the two candidates, rather than the original author of the tweets.
 
-Although there have been data scientists arguing that Trump???s campaign team and himself are using the same account to spread tweets, there are no formal evidence proving that the tweets are from different people. Therefore, I will treat all tweets from the two official accounts as political orientation of the two candidates and include them in the analysis as they represent the activity, opinions, and ideas of the two.
+Although there have been data scientists arguing that Trump's campaign team and himself are using the same account to spread tweets, there are no formal evidence proving that the tweets are from different people.(<http://varianceexplained.org/r/trump-tweets/>) Therefore, I will treat all tweets from the two official accounts as political orientation of the two candidates and include them in the analysis as they represent the activity, opinions, and ideas of the two.
 
 Each tweet contains its id, time, text, link, and author (Hillary Clinton/realDonaldTrump). The dataset can be downloaded from the Kaggle website. (<https://www.kaggle.com/speckledpingu/RawTwitterFeeds>)
 
@@ -65,7 +65,11 @@ The first two parts of the analysis utilizes **statistical and text mining tools
 
 ### Data cleaning and preprocessing
 
-normalization/stemming, stop words removal, and TF/IDF
+1.  normalization/stemming
+
+2.  stop words removal
+
+3.  TF/IDF
 
 ### Data exploration:
 
@@ -111,6 +115,7 @@ library(sparklyr)
 library(caTools)
 library(data.table)
 library(NLP)
+library(zoo)
 ```
 
 ### Load Data
@@ -138,25 +143,7 @@ raw_tweet <- raw_tweet %>%
 raw_tweet <- raw_tweet %>%
   mutate(date = Date) %>%
   select(-Date)
-
-raw_tweet
 ```
-
-    ## # A tibble: 11,770 <U+00D7> 6
-    ##          id                                      link
-    ##       <dbl>                                     <chr>
-    ## 1  7.85e+17 /HillaryClinton/status/785272428905791489
-    ## 2  7.85e+17 /HillaryClinton/status/785325012152713216
-    ## 3  7.85e+17 /HillaryClinton/status/785282982261190656
-    ## 4  7.87e+17 /HillaryClinton/status/786963642080227328
-    ## 5  7.87e+17 /HillaryClinton/status/786958117531742208
-    ## 6  7.87e+17 /HillaryClinton/status/786956647306522624
-    ## 7  7.87e+17 /HillaryClinton/status/786956397766385665
-    ## 8  7.87e+17 /HillaryClinton/status/786955912409907200
-    ## 9  7.87e+17 /HillaryClinton/status/786954388682203141
-    ## 10 7.87e+17 /HillaryClinton/status/786954200584454144
-    ## # ... with 11,760 more rows, and 4 more variables: text <chr>,
-    ## #   author <chr>, handle <chr>, date <chr>
 
 ### Extract month and year variable
 
@@ -168,26 +155,6 @@ tweet <- raw_tweet %>%
   mutate(month = factor(month, month.abb, ordered=TRUE)) %>%
   filter(date >= as.Date("2015-03-01")) #formally launch
 
-tweet
-```
-
-    ## # A tibble: 7,901 <U+00D7> 8
-    ##          id                                      link
-    ##       <dbl>                                     <chr>
-    ## 1  7.85e+17 /HillaryClinton/status/785272428905791489
-    ## 2  7.85e+17 /HillaryClinton/status/785325012152713216
-    ## 3  7.85e+17 /HillaryClinton/status/785282982261190656
-    ## 4  7.87e+17 /HillaryClinton/status/786963642080227328
-    ## 5  7.87e+17 /HillaryClinton/status/786958117531742208
-    ## 6  7.87e+17 /HillaryClinton/status/786956647306522624
-    ## 7  7.87e+17 /HillaryClinton/status/786956397766385665
-    ## 8  7.87e+17 /HillaryClinton/status/786955912409907200
-    ## 9  7.87e+17 /HillaryClinton/status/786954388682203141
-    ## 10 7.87e+17 /HillaryClinton/status/786954200584454144
-    ## # ... with 7,891 more rows, and 6 more variables: text <chr>,
-    ## #   author <chr>, handle <chr>, date <chr>, month <ord>, year <int>
-
-``` r
 #write_csv(tweet, "thesis_data/tidy_tweet.csv")
 ```
 
@@ -196,23 +163,21 @@ tweet
 ``` r
 #frequency changes detected
 frequency_handle <- tweet %>%
-  count(date, handle)
+  mutate(Date = as.yearmon(as.Date(date))) %>%
+  count(Date, handle)
 
-ggplot(frequency_handle, aes(as.Date(date), n), group = handle) + 
+ggplot(frequency_handle, aes(as.Date(Date), n), group = handle) + 
    geom_line(size = 0.5, alpha = 0.7, aes(color = handle)) +
    scale_colour_manual(values = c("springgreen4", "firebrick3")) +
-   scale_x_date(labels = date_format("%Y-%m-%d"), date_breaks = "3 months") +   
+   scale_x_date(labels = date_format("%Y-%m"), date_breaks = "3 months") +   
    xlab("Date") + 
    ylab("Tweet Count") +
    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-   labs(title = "Figure 1: Change of frequencies in tweets")
+   labs(title = "Figure 1: Change of frequencies in tweets") +
+   ggsave(file="frequency_handle.png")
 ```
 
 ![](thesis_draft_files/figure-markdown_github/frequency-1.png)
-
-``` r
-   #ggsave(file="frequency_handle.png")
-```
 
 ### Preprocessing: tokenization, normalization, removing stop words
 
@@ -305,15 +270,13 @@ head(bigram("clinton"),10)
 
 ### 1.2 Quantify what a document is about: Finding the most representative terms for each candidate
 
-Although removing stop words reduces the dimensionality of term space, it is not a very sophisticated approach to adjusting term frequency for commonly used words. After removing stop words, I start to analyze the most frequent terms in the two candidates' language. However, usually we care more about how rare a term is, not just the frequency. Many terms used by a candidate will also be used by his/her rival, not giving much insight into the tweet's author. For example, the term "win" or "Trump" is used frequently in the dataset by both candidates, but it is not helpful to distinguish them; however, there are terms that are used much less frequently, but almost exclusively by certain candidate. Those are the words (or groups of words) that I look for in order to analyze the differences more accurately.
+Although removing stop words reduces the dimensionality of term space, it is not a very sophisticated approach to adjusting term frequency for commonly used words. After removing stop words, I start to analyze the most frequent terms in the two candidates' language. However, usually we care more about how rare a term is, not just the frequency. Many terms used by a candidate will also be used by his/her rival, not giving much insight into the tweet's author. For example, the term "win" or "Trump"" is used frequently in the dataset by both candidates, but it is not helpful to distinguish them; however, there are terms that are used much less frequently, but almost exclusively by certain candidate. Those are the words (or groups of words) that I look for in order to analyze the differences more accurately.
 
-One way to measure how important a word may be is its term frequency (tf): how frequently a word occurs in a document. Another approach is to look at a term's inverse document frequency (idf), which decreases the weight for commonly used words and increases the weight for words that are not used very often in a collection of documents. We can combine these two to calculate a term's tf-idf (the two quantities multiplied together): the frequency of a term adjusted for how rarely it is used (Silge & Robinson, 2016).
+One way to measure how important a word may be is its term frequency (tf): how frequently a word occurs in a document. Another approach is to look at a term's inverse document frequency (idf), which decreases the weight for commonly used words and increases the weight for words that are not used very often in a collection of documents. We can combine these two to calculate a term???s tf-idf (the two quantities multiplied together): the frequency of a term adjusted for how rarely it is used (Silge & Robinson, 2016).
 
-The idea of tf-idf is to find the most important words for the content in the group of tweets by Trump and Clinton. By calculating tf-idf, we attempt to find the words that are important (i.e., common) in a tweet, but not too common. It is meaningless to quantify the importance of different words in a single tweet, because every tweet is only 140 words in length. Therefore, I treat tweets from Trump (or Clinton) as a corpus. Then the statistic tf-idf is intended to measure how important a word is to a candidate in his or her corpus. The value of tf-idf increases proportionally to the frequency that a word appears in the document, but is counteracting by the frequency of that word in the corpus. Term Frequency - Inverse document frequency \[tf-idf\] is calculated for each word using the formula (Vijayarani, Ilamathi, & Nithya, 2015):
+The idea of tf-idf is to find the most important words for the content in the group of tweets by Trump and Clinton. By calculating tf-idf, we attempt to find the words that are important (i.e., common) in a tweet, but not too common. It is meaningless to quantify the importance of different words in a single tweet, because every tweet is only 140 words in length. Therefore, I treat tweets from Trump (or Clinton) as a corpus. Then the statistic tf-idf is intended to measure how important a word is to a candidate in his or her corpus. The value of tf-idf increases proportionally to the frequency that a word appears in the document, but is counteracting by the frequency of that word in the corpus. Term Frequency - Inverse document frequency \[tf-idf\] is calculated for each word using the formula (Vijayarani, Ilamathi, & Nithya, 2015): **tf-idf (t, f, d) = tf (t, d) \* idf (t, d)**
 
-**tf-idf (t, f, d) = tf (t, d) \* idf (t, d)**
-
-I use this formula to calculate the most important terms (bigrams) in each candidate's tweets.
+I use this formula to calculate the most important terms (bigrams) in each candidate???s tweets.
 
 ``` r
 #tokenize
@@ -367,8 +330,8 @@ tfidf <- tfidf_bigram %>%
         theme(strip.text=element_text(hjust=0)) +
         theme(strip.text = element_text(face = "italic", size=10)) +
         theme(axis.title.x=element_blank()) +
-        theme(axis.ticks.x=element_blank())
-        #ggsave(file="tfidf_bigram.png")
+        theme(axis.ticks.x=element_blank()) +
+        ggsave(file="tfidf_bigram.png")
 
 tfidf
 ```
@@ -380,7 +343,7 @@ Part 2: Sentiment Analysis
 
 ### 2.1 Sentiment-topic words (top words in each sentiment)
 
-##### Clinton
+Clinton
 
 ``` r
 newstop2 <- read_csv("thesis_data/customized_stopwords2.csv")
@@ -409,16 +372,13 @@ nrc_word_counts %>%
     theme(strip.text = element_text(face = "italic", size=10)) +
     theme(axis.title.x=element_blank()) +
     theme(axis.ticks.x=element_blank()) +
-    theme(axis.text.x=element_blank())
+    theme(axis.text.x=element_blank()) +
+    ggsave(file="top_10_words_sentiment_clinton.png")
 ```
 
 ![](thesis_draft_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
-``` r
-    #ggsave(file="top_10_words_sentiment_clinton.png")
-```
-
-##### Trump
+Trump
 
 ``` r
 #trump
@@ -439,14 +399,11 @@ nrc_word_counts %>%
     theme(strip.text = element_text(face = "italic", size=10)) +
     theme(axis.title.x=element_blank()) +
     theme(axis.ticks.x=element_blank()) +
-    theme(axis.text.x=element_blank()) 
+    theme(axis.text.x=element_blank()) +
+    ggsave(file="top_10_words_sentiment_trump.png")
 ```
 
 ![](thesis_draft_files/figure-markdown_github/unnamed-chunk-6-1.png)
-
-``` r
-    #ggsave(file="top_10_words_sentiment_trump.png")
-```
 
 Since the sentiment dictionary cannot detect **negators, amplifiers, de-amplifiers, and adversative conjunctions** (phrases like 'not my president' might not be correctly detected).
 
@@ -486,14 +443,11 @@ negated_words %>%
     theme(strip.text = element_text(face = "italic", size=10)) +
     theme(axis.title.x=element_blank()) +
     theme(axis.ticks.x=element_blank()) +
-    theme(axis.text.x=element_blank()) 
+    theme(axis.text.x=element_blank()) +
+    ggsave(file="top_negation_words.png")
 ```
 
 ![](thesis_draft_files/figure-markdown_github/unnamed-chunk-7-1.png)
-
-``` r
-    #ggsave(file="top_negation_words.png")
-```
 
 #### How do candidates talk about themselves and their opponent?
 
@@ -525,14 +479,11 @@ name_words %>%
     theme(strip.text = element_text(face = "italic", size=10)) +
     theme(axis.title.x=element_blank()) +
     theme(axis.ticks.x=element_blank()) +
-    theme(axis.text.x=element_blank()) 
+    theme(axis.text.x=element_blank()) +
+    ggsave(file="top_words_names.png")
 ```
 
 ![](thesis_draft_files/figure-markdown_github/unnamed-chunk-8-1.png)
-
-``` r
-    #ggsave(file="top_words_names.png")
-```
 
 #### How does each candidate talk about immigration?
 
@@ -564,20 +515,15 @@ immigration_words %>%
     theme(strip.text = element_text(face = "italic", size=10)) +
     theme(axis.title.x=element_blank()) +
     theme(axis.ticks.x=element_blank()) +
-    theme(axis.text.x=element_blank()) 
+    theme(axis.text.x=element_blank()) +
+    ggsave(file="top_words_immigration.png")
 ```
 
 ![](thesis_draft_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
-``` r
-    #ggsave(file="top_words_immigration.png")
-```
+### 2.3 Change of sentiments over time
 
-### 2.3 Change of sentiments by month in 2016
-
-Get sentiments and emotions and calculate the mean of each sentiment/emotion
-
-**Change of sentiments (positive/negative)**
+Get sentiments and emotions and calculate the mean of sentiments
 
 ``` r
 tweet$sentiment <- get_sentiment(tweet$text) %>% 
@@ -586,15 +532,13 @@ tweet$sentiment <- get_sentiment(tweet$text) %>%
 #look at the mean sentiment scores for each candidate
 clinton_average <- tweet %>%
   filter(handle == "clinton") %>%
-  #filter(year == 2016) %>%
-  group_by(year)%>% 
+  #group_by(date)%>% 
   summarise(Mean=mean(sentiment), Max=max(sentiment), Min=min(sentiment), Median=median(sentiment), Std=sd(sentiment), Variance = var(sentiment)) %>%
   mutate(handle = "clinton")
 
 trump_average <- tweet %>%
   filter(handle == "trump") %>%
-  #filter(year == 2016) %>%
-  group_by(year)%>% 
+  #group_by(date)%>% 
   summarise(Mean=mean(sentiment), Max=max(sentiment), Min=min(sentiment), Median=median(sentiment), Std=sd(sentiment), Variance = var(sentiment)) %>%
   mutate(handle = "trump")
 
@@ -602,17 +546,11 @@ average <- rbind(clinton_average, trump_average)
 average
 ```
 
-    ## # A tibble: 4 <U+00D7> 8
-    ##    year      Mean   Max   Min Median      Std Variance  handle
-    ## * <int>     <dbl> <dbl> <dbl>  <dbl>    <dbl>    <dbl>   <chr>
-    ## 1  2015 0.4312034  5.35 -4.05   0.50 1.134032 1.286030 clinton
-    ## 2  2016 0.2495408  4.40 -3.90   0.25 1.134431 1.286933 clinton
-    ## 3  2015 0.4125546  4.70 -4.95   0.50 1.199980 1.439952   trump
-    ## 4  2016 0.1703177  5.30 -4.50   0.30 1.321653 1.746766   trump
-
-``` r
-#write.csv(average, "thesis_data/average_sentiment_year.csv")
-```
+    ## # A tibble: 2 <U+00D7> 7
+    ##        Mean   Max   Min Median      Std Variance  handle
+    ## *     <dbl> <dbl> <dbl>  <dbl>    <dbl>    <dbl>   <chr>
+    ## 1 0.3131667  5.35 -4.05    0.3 1.137387 1.293649 clinton
+    ## 2 0.3030661  5.30 -4.95    0.4 1.262017 1.592686   trump
 
 #### Let's verify the result!
 
@@ -644,42 +582,6 @@ as.String(negative)
     ## -4.95
     ## We must stop the crime and killing machine that is illegal immigration. Rampant problems will only get worse. Take back our country!
 
-**Change of emotions (8 categories)**
-
-``` r
-nrc_tweet <- cbind(tweet, get_nrc_sentiment(tweet$text)) 
-
-nrc_clinton <- nrc_tweet %>% 
-  filter(handle == "clinton") %>%
-  group_by(year) %>%
-  summarise(mean_angry=mean(anger), mean_anticipation=mean(anticipation), mean_disgust=mean(disgust), mean_fear=mean(fear), mean_joy=mean(joy), mean_sad=mean(sadness), mean_surprise=mean(surprise), mean_trust=mean(trust), mean_positive=mean(positive), mean_negative=mean(negative)) %>%
-  mutate(handle = "clinton")
-
-nrc_trump <- nrc_tweet %>% 
-  filter(handle == "trump") %>%
-  group_by(year) %>%
-  summarise(mean_angry=mean(anger), mean_anticipation=mean(anticipation), mean_disgust=mean(disgust), mean_fear=mean(fear), mean_joy=mean(joy), mean_sad=mean(sadness), mean_surprise=mean(surprise), mean_trust=mean(trust), mean_positive=mean(positive), mean_negative=mean(negative)) %>%
-  mutate(handle = "trump")
-
-nrc_average <- rbind(nrc_clinton, nrc_trump)
-nrc_average
-```
-
-    ## # A tibble: 4 <U+00D7> 12
-    ##    year mean_angry mean_anticipation mean_disgust mean_fear  mean_joy
-    ## * <int>      <dbl>             <dbl>        <dbl>     <dbl>     <dbl>
-    ## 1  2015  0.3716720         0.5516507    0.1416400 0.4227902 0.4440895
-    ## 2  2016  0.3983927         0.4644087    0.1802526 0.4144661 0.4001148
-    ## 3  2015  0.3788210         0.5403930    0.2620087 0.3864629 0.4263100
-    ## 4  2016  0.4679021         0.4116479    0.2991396 0.4308405 0.3467902
-    ## # ... with 6 more variables: mean_sad <dbl>, mean_surprise <dbl>,
-    ## #   mean_trust <dbl>, mean_positive <dbl>, mean_negative <dbl>,
-    ## #   handle <chr>
-
-``` r
-#write.csv(nrc_average, "thesis_data/average_nrc_sentiment_year.csv")
-```
-
 ### Positive and negative contribution of each word
 
 It's worth looking deeper to understand why some months ended up more positive than others. For that, I examine the total positive and negative contributions of each word for every candidate.
@@ -699,21 +601,18 @@ tweet_tidy %>%
   geom_col(show.legend = FALSE) +
   coord_flip() +
   theme_minimal(base_size = 11) +
-  labs(title = "Figure 10: Contribution to sentiment in Clinton's Tweets", x = "Contribution", y = "Word") +
+  labs(title = "Figure 8: Contribution to sentiment in Clinton's Tweets", x = "Contribution", y = "Word") +
   scale_color_viridis(end = 0.75, direction = -1,option = 'C') +
   scale_x_discrete(expand=c(0.02,0)) +
   theme(strip.text=element_text(hjust=0)) +
   theme(strip.text = element_text(face = "italic", size=10)) +
   theme(axis.title.x=element_blank()) +
   theme(axis.ticks.x=element_blank()) +
-  theme(axis.text.x=element_blank()) 
+  theme(axis.text.x=element_blank()) +
+  ggsave(file="contribution_sentiment_clinton.png")
 ```
 
-![](thesis_draft_files/figure-markdown_github/unnamed-chunk-13-1.png)
-
-``` r
-  #ggsave(file="contribution_sentiment_clinton.png")
-```
+![](thesis_draft_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
 #### Trump
 
@@ -730,21 +629,18 @@ tweet_tidy %>%
   geom_col(show.legend = FALSE) +
   coord_flip() +
   theme_minimal(base_size = 11) +
-  labs(title = "Figure 11: Contribution to sentiment in Trump's Tweets", x = "Contribution", y = "Word") +
+  labs(title = "Figure 9: Contribution to sentiment in Trump's Tweets", x = "Contribution", y = "Word") +
   scale_color_viridis(end = 0.75, direction = -1,option = 'C') +
   scale_x_discrete(expand=c(0.02,0)) +
   theme(strip.text=element_text(hjust=0)) +
   theme(strip.text = element_text(face = "italic", size=10)) +
   theme(axis.title.x=element_blank()) +
   theme(axis.ticks.x=element_blank()) +
-  theme(axis.text.x=element_blank()) 
+  theme(axis.text.x=element_blank()) +
+  ggsave(file="contribution_sentiment_trump.png")
 ```
 
-![](thesis_draft_files/figure-markdown_github/unnamed-chunk-14-1.png)
-
-``` r
-  #ggsave(file="contribution_sentiment_trump.png")
-```
+![](thesis_draft_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 Part 3: What features contribute to the language differences?
 -------------------------------------------------------------
@@ -755,7 +651,7 @@ Load the annotated data:
 nrc_tweet <- read_csv("thesis_data/LIWC2015 Results (tidy_tweet).csv")
 ```
 
-Let's look at the most angry, most anxious, and most religious tweet
+Let's look at the most angry, most anxious, and the tweet most related to religion
 
 ``` r
 #the most angry sentiment
@@ -805,8 +701,8 @@ as.String(relig)
 #logistic regresssion on tweets: is_trump~features
 nrc_tweet$is_trump <- ifelse(nrc_tweet$handle=="trump",1,0)
 
-#all features
 model1 <- glm(is_trump ~i+we+assent+you+shehe+they+posemo+negemo+negate+anger+sad+anx+social+family+female+male+sexual+achieve+work+home+money+relig+informal+swear+health+death+Quote+Exclam+QMark+Tone+Authentic, family=binomial(link='logit'),data=nrc_tweet)
+
 summary(model1)
 ```
 
@@ -868,124 +764,25 @@ summary(model1)
     ## 
     ## Number of Fisher Scoring iterations: 6
 
-``` r
-#self-direction
-model2 <- glm(is_trump~i+we, family=binomial(link='logit'),data=nrc_tweet)
-tidy_model2 <- tidy(model2)
-#write.csv(tidy_model2, "thesis_data/tidy_model2.csv")
-summary(model2)
-```
-
-    ## 
-    ## Call:
-    ## glm(formula = is_trump ~ i + we, family = binomial(link = "logit"), 
-    ##     data = nrc_tweet)
-    ## 
-    ## Deviance Residuals: 
-    ##     Min       1Q   Median       3Q      Max  
-    ## -2.8490  -1.3010   0.6969   1.0586   2.1400  
-    ## 
-    ## Coefficients:
-    ##              Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)  0.286032   0.029459   9.709   <2e-16 ***
-    ## i            0.175046   0.009875  17.727   <2e-16 ***
-    ## we          -0.098760   0.007626 -12.951   <2e-16 ***
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## (Dispersion parameter for binomial family taken to be 1)
-    ## 
-    ##     Null deviance: 10700  on 7900  degrees of freedom
-    ## Residual deviance: 10027  on 7898  degrees of freedom
-    ## AIC: 10033
-    ## 
-    ## Number of Fisher Scoring iterations: 4
-
-``` r
-#sentiment
-model3 <- glm(is_trump~posemo+negemo+negate+anger+sad+anx+swear, family=binomial(link='logit'),data=nrc_tweet)
-tidy_model3 <- tidy(model3)
-#write.csv(tidy_model3, "thesis_data/tidy_model3.csv")
-summary(model3)
-```
-
-    ## 
-    ## Call:
-    ## glm(formula = is_trump ~ posemo + negemo + negate + anger + sad + 
-    ##     anx + swear, family = binomial(link = "logit"), data = nrc_tweet)
-    ## 
-    ## Deviance Residuals: 
-    ##    Min      1Q  Median      3Q     Max  
-    ## -3.231  -1.171   0.769   1.054   1.486  
-    ## 
-    ## Coefficients:
-    ##              Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept) -0.151907   0.037130  -4.091 4.29e-05 ***
-    ## posemo       0.085298   0.004904  17.393  < 2e-16 ***
-    ## negemo       0.074713   0.011912   6.272 3.56e-10 ***
-    ## negate       0.024832   0.008828   2.813  0.00491 ** 
-    ## anger       -0.110407   0.017411  -6.341 2.28e-10 ***
-    ## sad          0.059331   0.022517   2.635  0.00842 ** 
-    ## anx         -0.019947   0.023757  -0.840  0.40111    
-    ## swear        0.666099   0.123105   5.411 6.27e-08 ***
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## (Dispersion parameter for binomial family taken to be 1)
-    ## 
-    ##     Null deviance: 10700  on 7900  degrees of freedom
-    ## Residual deviance: 10198  on 7893  degrees of freedom
-    ## AIC: 10214
-    ## 
-    ## Number of Fisher Scoring iterations: 5
-
-``` r
-#personal concerns
-model4 <- glm(is_trump~relig+death+achieve, family=binomial(link='logit'),data=nrc_tweet)
-tidy_model4 <- tidy(model4)
-#write.csv(tidy_model4, "thesis_data/tidy_model4.csv")
-summary(model4)
-```
-
-    ## 
-    ## Call:
-    ## glm(formula = is_trump ~ relig + death + achieve, family = binomial(link = "logit"), 
-    ##     data = nrc_tweet)
-    ## 
-    ## Deviance Residuals: 
-    ##    Min      1Q  Median      3Q     Max  
-    ## -1.665  -1.329   1.030   1.033   1.033  
-    ## 
-    ## Coefficients:
-    ##              Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept) 0.3500837  0.0269027  13.013   <2e-16 ***
-    ## relig       0.0094998  0.0181215   0.524   0.6001    
-    ## death       0.0513213  0.0279306   1.837   0.0661 .  
-    ## achieve     0.0008906  0.0066606   0.134   0.8936    
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## (Dispersion parameter for binomial family taken to be 1)
-    ## 
-    ##     Null deviance: 10700  on 7900  degrees of freedom
-    ## Residual deviance: 10696  on 7897  degrees of freedom
-    ## AIC: 10704
-    ## 
-    ## Number of Fisher Scoring iterations: 4
-
 If we get a p-value less than the significance level of 0.05, we reject the null hypothesis and conclude that *this feature and the outcome variable are in fact dependent*.
 
 If *e*<sup>*β*</sup> − 1 &gt; 0, odds of being **Trump** increases by the difference in percentage; otherwise, odds decrease by the difference in percentage.
 
 ``` r
-paste(names(model3$coefficients),": ",round((exp(model3$coefficients)-1)*100,2),"%",sep="")
+paste(names(model1$coefficients),": ",round((exp(model1$coefficients)-1)*100,2),"%",sep="")
 ```
 
-    ## [1] "(Intercept): -14.09%" "posemo: 8.9%"         "negemo: 7.76%"       
-    ## [4] "negate: 2.51%"        "anger: -10.45%"       "sad: 6.11%"          
-    ## [7] "anx: -1.97%"          "swear: 94.66%"
-
-For example, in the first model:
+    ##  [1] "(Intercept): 4.19%" "i: 12.26%"          "we: -12.74%"       
+    ##  [4] "assent: -0.01%"     "you: -1.21%"        "shehe: 7.04%"      
+    ##  [7] "they: 0.34%"        "posemo: 8.01%"      "negemo: 5.12%"     
+    ## [10] "negate: -0.5%"      "anger: -8.65%"      "sad: 3.8%"         
+    ## [13] "anx: 1.83%"         "social: -2.17%"     "family: -9.91%"    
+    ## [16] "female: -15.62%"    "male: -2.19%"       "sexual: -7.41%"    
+    ## [19] "achieve: -3.56%"    "work: 2.9%"         "home: -12.83%"     
+    ## [22] "money: -5.56%"      "relig: -2.35%"      "informal: -11.91%" 
+    ## [25] "swear: 101.89%"     "health: -11.93%"    "death: 12.78%"     
+    ## [28] "Quote: 8.18%"       "Exclam: 61.5%"      "QMark: 17.29%"     
+    ## [31] "Tone: -0.14%"       "Authentic: 0.47%"
 
 1.  By saying 'I', your odds of being Trump increase by 12.26%
 2.  By saying 'we', your odds of being Trump decrease by 12.74%
